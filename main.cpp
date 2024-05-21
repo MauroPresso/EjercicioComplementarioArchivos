@@ -4,8 +4,8 @@
 
 struct Complex
 {
-    float re;
-    float im;
+    double re;
+    double im;
 };
 
 int main()
@@ -23,16 +23,16 @@ int main()
     }
     
 	// Cantidades.
-    uint8_t cant_intigers;
-    uint8_t cant_float;
-    uint8_t cant_double;
-    uint8_t cant_complex;
+    int cant_intigers;
+    int cant_float;
+    int cant_double;
+    int cant_complex;
     
 	// Cantidades TOTALES.
-	uint8_t cant_TOTAL_intigers = 0;
-    uint8_t cant_TOTAL_float = 0;
-    uint8_t cant_TOTAL_double = 0;
-    uint8_t cant_TOTAL_complex = 0;
+	int cant_TOTAL_intigers = 0;
+    int cant_TOTAL_float = 0;
+    int cant_TOTAL_double = 0;
+    int cant_TOTAL_complex = 0;
 
     // Creando vectores dinamicos para juntar los datos.
     int *intigers_vector;
@@ -40,49 +40,47 @@ int main()
     double *double_vector;
     struct Complex *complex_vector;
     
-	uint8_t finale;
-	uint8_t file_size;
 	char tipo;
 	tipo = '\0';
 	
 	// Creo estas variables para guardar la ultima posicion cargada de cada vector.
-	uint8_t ult_pos_i;
-	uint8_t ult_pos_f;
-	uint8_t ult_pos_d;
-	uint8_t ult_pos_z;
+	int ult_pos_i;
+	int ult_pos_f;
+	int ult_pos_d;
+	int ult_pos_z;
 
-	// Para saber el tamaño del archivo
-	fseek(pf, 0, SEEK_END);
-	file_size = ftell(pf);
-	
-    
 	rewind(pf); // Me lo pone al principio del archivo.
     
 	// Hago este bucle para saber cuanta cantidad hay de cada tipo de dato.
-	do{
-		fread(&tipo, sizeof(char), 1, pf); // Si yo le pido a la funcion fread() que lea 'tanto', se corre 'tanto'. 
+	while(fread(&tipo, sizeof(char), 1, pf) != 0) // Si yo le pido a la funcion fread() que lea 'tanto', se corre 'tanto'.
+	{
+		// Acá ya detectó el primer tipo
 		if(tipo == 'i')
 		{
-			fread(&cant_intigers, sizeof(uint8_t), 1, pf);
+			fread(&cant_intigers, sizeof(int), 1, pf);
 			cant_TOTAL_intigers = cant_TOTAL_intigers + cant_intigers;
+			fseek(pf, (sizeof(int)*cant_intigers), SEEK_CUR);
 		}
 		if(tipo == 'f')
 		{
-			fread(&cant_float, sizeof(uint8_t), 1, pf);
+			fread(&cant_float, sizeof(int), 1, pf);
 			cant_TOTAL_float = cant_TOTAL_float + cant_float;
+			fseek(pf, (sizeof(float)*cant_float), SEEK_CUR);
 		}
 		if(tipo == 'd')
 		{
-			fread(&cant_double, sizeof(uint8_t), 1, pf);
+			fread(&cant_double, sizeof(int), 1, pf);
 			cant_TOTAL_double = cant_TOTAL_double + cant_double;
+			fseek(pf, (sizeof(double)*cant_double), SEEK_CUR);
 		}
 		if(tipo == 'z')
 		{
-			fread(&cant_complex, sizeof(uint8_t), 1, pf);
+			fread(&cant_complex, sizeof(int), 1, pf);
 			cant_TOTAL_complex = cant_TOTAL_complex + cant_complex;
+			fseek(pf, (sizeof(Complex)*cant_complex), SEEK_CUR);
 		}
-		finale = ftell(pf);
-    } while(finale < file_size); // Si finale = file_size, es porque el archivo ya se leyo completo.
+		
+    } 
 	
 	printf("\n");
 	// Printing the total of intiger values.
@@ -116,149 +114,85 @@ int main()
 	complex_vector = new struct Complex[cant_TOTAL_complex];
 	ult_pos_z = 0;
 	
-
+	rewind(pf); // Me lo pone al principio del archivo.
+	
 	// Hago este bucle para cargar los valores en cada vector.
-	do{
-		fread(&tipo, sizeof(char), 1, pf); // Si yo le pido a la funcion fread() que lea 'tanto', se corre 'tanto'. 
+	while(fread(&tipo, sizeof(char), 1, pf) != 0) // Si yo le pido a la funcion fread() que lea 'tanto', se corre 'tanto'.
+	{
+		// Aca ya detecto el tipo
 		if(tipo == 'i')
 		{
-			if(cant_TOTAL_intigers > 0)
+			int k;
+			fread(&cant_intigers, sizeof(int), 1, pf);
+			for(k = ult_pos_i ; k < (cant_TOTAL_intigers - cant_intigers) ; k++)
 			{
-				uint8_t k;
-				fread(&cant_intigers, sizeof(uint8_t), 1, pf);
-				if(ult_pos_i == 0) // Es la primera pasada.
-				{
-					for(k = 0 ; k < cant_intigers ; k++)
-					{
-						fread(&intigers_vector[k], sizeof(int), 1, pf);
-					}
-					ult_pos_i = ult_pos_i + k;
-				}
-				else
-				{
-					for(k = 0 ; k < cant_intigers ; k++)
-					{
-						fread(&intigers_vector[k + 1 + ult_pos_i], sizeof(int), 1, pf);
-					}
-					ult_pos_i = ult_pos_i + k;
-				}
+				fread(&intigers_vector[k], sizeof(int), 1, pf);
 			}
+			ult_pos_i = k;	
 		}
 		if(tipo == 'f')
 		{
-			if(cant_TOTAL_float > 0)
+			int k;
+			fread(&cant_float, sizeof(int), 1, pf);
+			for(k = ult_pos_f ; k < (cant_TOTAL_float - cant_float) ; k++)
 			{
-				uint8_t k;
-				fread(&cant_float, sizeof(uint8_t), 1, pf);
-				if(ult_pos_f == 0) // Es la primera pasada.
-				{
-					for(k = 0 ; k < cant_float ; k++)
-					{
-						fread(&float_vector[k], sizeof(float), 1, pf);
-					}
-					ult_pos_f = ult_pos_f + k;
-				}
-				else
-				{
-					for(k = 0 ; k < cant_float ; k++)
-					{
-						fread(&float_vector[k + 1 + ult_pos_f], sizeof(float), 1, pf);
-					}
-					ult_pos_f = ult_pos_f + k;
-				}
+				fread(&float_vector[k], sizeof(float), 1, pf);
 			}
+			ult_pos_f = k;
 		}
 		if(tipo == 'd')
 		{
-			if(cant_TOTAL_double > 0)
+			int k;
+			fread(&cant_double, sizeof(int), 1, pf);
+			for(k = ult_pos_d ; k < (cant_TOTAL_double - cant_double) ; k++)
 			{
-				uint8_t k;
-				fread(&cant_double, sizeof(uint8_t), 1, pf);
-				if(ult_pos_d == 0) // Es la primera pasada.
-				{
-					for(k = 0 ; k < cant_double ; k++)
-					{
-						fread(&double_vector[k], sizeof(double), 1, pf);
-					}
-					ult_pos_d = ult_pos_d + k;
-				}
-				else
-				{
-					for(k = 0 ; k < cant_double ; k++)
-					{
-						fread(&double_vector[k + 1 + ult_pos_d], sizeof(double), 1, pf);
-					}
-					ult_pos_d = ult_pos_d + k;
-				}
+				fread(&double_vector[k], sizeof(double), 1, pf);
 			}
+			ult_pos_d = k;
 		}
 		if(tipo == 'z')
 		{
-			if(cant_TOTAL_complex > 0)
+			int k;
+			fread(&cant_complex, sizeof(int), 1, pf);
+			for(k = ult_pos_z ; k < (cant_TOTAL_complex - cant_complex) ; k++)
 			{
-				uint8_t k;
-				fread(&cant_complex, sizeof(uint8_t), 1, pf);
-				if(ult_pos_z == 0) // Es la primera pasada.
-				{
-					for(k = 0 ; k < cant_complex ; k++)
-					{
-						fread(&complex_vector[k], sizeof(Complex), 1, pf);
-					}
-					ult_pos_z = ult_pos_z + k;
-				}
-				else
-				{
-					for(k = 0 ; k < cant_complex ; k++)
-					{
-						fread(&complex_vector[k + 1 + ult_pos_z], sizeof(Complex), 1, pf);
-					}
-					ult_pos_z = ult_pos_z + k;
-				}
+				fread(&complex_vector[k], sizeof(struct Complex), 1, pf);
 			}
+			ult_pos_z = k;
 		}
-		finale = ftell(pf);
-    } while(finale < file_size); // Si finale = file_size, es porque el archivo ya se leyo completo.
+		
+    } 
 	
 	printf("\n");
 	// Imprimiendo los vectores.
-	if(cant_TOTAL_intigers > 0)
+	printf("\nVector numeros enteros:\n");
+	for(int j = 0 ; j < cant_TOTAL_intigers ; j++)
 	{
-		printf("\nVector numeros enteros:\n");
-		for(uint8_t j = 0 ; j < cant_TOTAL_intigers ; j++)
-		{
-			printf("%d\t", intigers_vector[j]);
-		}
-		printf("\n");
+		printf("%d\t", intigers_vector[j]);
 	}
-	if(cant_TOTAL_float > 0)
+	printf("\n");
+	
+	printf("\nVector numeros float:\n");
+	for(int j = 0 ; j < cant_TOTAL_float ; j++)
 	{
-		printf("\nVector numeros float:\n");
-		for(uint8_t j = 0 ; j < cant_TOTAL_float ; j++)
-		{
-			printf("%f\t", float_vector[j]);
-		}
-		printf("\n");
+		printf("%f\t", float_vector[j]);
 	}
-	if(cant_TOTAL_double > 0)
+	printf("\n");
+	
+	printf("\nVector numeros double:\n");
+	for(int j = 0 ; j < cant_TOTAL_double ; j++)
 	{
-		printf("\nVector numeros double:\n");
-		for(uint8_t j = 0 ; j < cant_TOTAL_double ; j++)
-		{
-			printf("%lf\t", double_vector[j]);
-		}
-		printf("\n");
+		printf("%lf\t", double_vector[j]);
 	}
-	if(cant_TOTAL_complex > 0)
+	printf("\n");
+	
+	printf("\nVector numeros complejos:\n");
+	for(int j = 0 ; j < cant_TOTAL_complex ; j++)
 	{
-		printf("\nVector numeros complejos:\n");
-		for(uint8_t j = 0 ; j < cant_TOTAL_complex ; j++)
-		{
-			printf("%f + (%f)j\t", complex_vector[j].re, complex_vector[j].im);
-		}
-		printf("\n");
+		printf("%lf + (%lf)j\t", complex_vector[j].re, complex_vector[j].im);
 	}
-
-
+	printf("\n");
+	
 	fclose(pf);
     
 	// Liberar memoria
@@ -268,13 +202,11 @@ int main()
     delete[] complex_vector;
 	
 	// Asegurar que no quede ningun puntero residual.
-    intigers_vector = NULL;
-    float_vector = NULL;
-    double_vector = NULL;
-    complex_vector = NULL;
+    intigers_vector = nullptr;
+    float_vector = nullptr;
+    double_vector = nullptr;
+    complex_vector = nullptr;
 	
 	printf("\nFin del programa :D");
     return 0;
 }
-
-// Conclusión: El error está en el printf de los complex.
