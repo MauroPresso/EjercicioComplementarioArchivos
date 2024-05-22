@@ -173,7 +173,7 @@ int main()
 	printf("\nVector de numeros float:\n");
 	for(int j = 0 ; j < cant_TOTAL_float ; j++)
 	{
-		printf("float[%d] = %f\n", j, float_vector[j]);
+		printf("float[%d] = %0.3f\n", j, float_vector[j]);
 	}
 	printf("\n");
 	
