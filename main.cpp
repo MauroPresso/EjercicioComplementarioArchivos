@@ -49,8 +49,6 @@ int main()
 	int ult_pos_d;
 	int ult_pos_z;
 
-	rewind(pf); // Me lo pone al principio del archivo.
-    
 	// Hago este bucle para saber cuanta cantidad hay de cada tipo de dato.
 	while(fread(&tipo, sizeof(char), 1, pf) != 0) // Si yo le pido a la funcion fread() que lea 'tanto', se corre 'tanto'.
 	{
@@ -77,7 +75,7 @@ int main()
 		{
 			fread(&cant_complex, sizeof(int), 1, pf);
 			cant_TOTAL_complex = cant_TOTAL_complex + cant_complex;
-			fseek(pf, (sizeof(Complex)*cant_complex), SEEK_CUR);
+			fseek(pf, (sizeof(struct Complex)*cant_complex), SEEK_CUR);
 		}
 		
     } 
@@ -124,7 +122,7 @@ int main()
 		{
 			int k;
 			fread(&cant_intigers, sizeof(int), 1, pf);
-			for(k = ult_pos_i ; k < (cant_TOTAL_intigers - cant_intigers) ; k++)
+			for(k = ult_pos_i ; k < (ult_pos_i + cant_intigers) ; k++)
 			{
 				fread(&intigers_vector[k], sizeof(int), 1, pf);
 			}
@@ -134,7 +132,7 @@ int main()
 		{
 			int k;
 			fread(&cant_float, sizeof(int), 1, pf);
-			for(k = ult_pos_f ; k < (cant_TOTAL_float - cant_float) ; k++)
+			for(k = ult_pos_f ; k < (ult_pos_f + cant_float) ; k++)
 			{
 				fread(&float_vector[k], sizeof(float), 1, pf);
 			}
@@ -144,7 +142,7 @@ int main()
 		{
 			int k;
 			fread(&cant_double, sizeof(int), 1, pf);
-			for(k = ult_pos_d ; k < (cant_TOTAL_double - cant_double) ; k++)
+			for(k = ult_pos_d ; k < (ult_pos_d + cant_double) ; k++)
 			{
 				fread(&double_vector[k], sizeof(double), 1, pf);
 			}
@@ -154,7 +152,7 @@ int main()
 		{
 			int k;
 			fread(&cant_complex, sizeof(int), 1, pf);
-			for(k = ult_pos_z ; k < (cant_TOTAL_complex - cant_complex) ; k++)
+			for(k = ult_pos_z ; k < (ult_pos_z + cant_complex) ; k++)
 			{
 				fread(&complex_vector[k], sizeof(struct Complex), 1, pf);
 			}
@@ -165,31 +163,31 @@ int main()
 	
 	printf("\n");
 	// Imprimiendo los vectores.
-	printf("\nVector numeros enteros:\n");
+	printf("\nVector de numeros enteros:\n");
 	for(int j = 0 ; j < cant_TOTAL_intigers ; j++)
 	{
-		printf("%d\t", intigers_vector[j]);
+		printf("int[%d] = %d\n", j, intigers_vector[j]);
 	}
 	printf("\n");
 	
-	printf("\nVector numeros float:\n");
+	printf("\nVector de numeros float:\n");
 	for(int j = 0 ; j < cant_TOTAL_float ; j++)
 	{
-		printf("%f\t", float_vector[j]);
+		printf("float[%d] = %f\n", j, float_vector[j]);
 	}
 	printf("\n");
 	
-	printf("\nVector numeros double:\n");
+	printf("\nVector de numeros double:\n");
 	for(int j = 0 ; j < cant_TOTAL_double ; j++)
 	{
-		printf("%lf\t", double_vector[j]);
+		printf("double[%d] = %lf\n", j, double_vector[j]);
 	}
 	printf("\n");
 	
-	printf("\nVector numeros complejos:\n");
+	printf("\nVector de numeros complejos:\n");
 	for(int j = 0 ; j < cant_TOTAL_complex ; j++)
 	{
-		printf("%lf + (%lf)j\t", complex_vector[j].re, complex_vector[j].im);
+		printf("Complex[%d] = %lf + (%lf)j\n", j, complex_vector[j].re, complex_vector[j].im);
 	}
 	printf("\n");
 	
